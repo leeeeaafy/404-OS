@@ -7,9 +7,12 @@
 <p><b><i>Did you get lost?</i></b></p>
 
  <body>
-
+<audio controls>
+  <source src="c.wav" type="audio/wav">
+  <source src="c.wav" type=""></audio>
 
 <style>
+  html,body { min-height: 100%; }
 html{font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
  color: rgb(4, 4, 71);text-align: center;}
  h1{font-size: 110px;}
@@ -17,10 +20,53 @@ html{font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 
 body{background-image: url(cloud.jpg);}
 
+.box { position: relative; z-index: 10; width: 100%;
+      max-width: 672px; height: 52px;  min-height: 220px;  max-height: 520px; border: 1px solid #E7E2DB;
+      border-radius: 22px;background: rgba(255, 255, 255, 0.90);
+     box-shadow: 0 1px 2px rgba(31, 29, 26, 0.04), 0 26px 50px -26px rgba(31, 29, 26, 0.20),
+        0 34px 64px -28px rgba(31, 29, 26, 0.26); will-change: transform; }
 
 
-</style>
+         .box textarea {display: block; width: 100%; height: 100%; resize: none;
+      padding: 24px; border: 0; border-radius: 22px; background: transparent; color: #1F1D1A;
+      font: inherit; font-size: 17px;line-height: 1.75; outline: none;}
 
+    @media (min-width: 640px) { .box textarea { padding: 32px; }}
+
+    /* moving thingie */
+    .grip {position: absolute; top: 12px; right: 12px;width: 44px;height: 32px; display: grid; place-items: center; border: 1px solid #E7E2DB;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.70);cursor: grab;touch-action: none;user-select: none;transition: background 0.2s; }
+    .grip:hover { background: #FFFFFF;}
+    .grip:active {cursor: grabbing;}
+
+    .dots {display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;}
+    .dots span {width: 2.5px; height: 2.5px; border-radius: 50%;background: #B6B1A9;}
+ </style>
+
+ <div class="box" id="box">
+    <textarea id="editor" aria-label="Text box" spellcheck="false" autofocus></textarea>
+    <div class="grip" id="grip" role="button" aria-label="Move text box">
+      <div class="dots">
+        <span></span><span></span><span></span>
+      </div>
+
+  <script>
+    const box = document.getElementById("box");
+    const grip = document.getElementById("grip");
+
+    let x = 0, y = 0;          
+    let start = null;          
+
+    grip.addEventListener("pointerdown", (e) => {e.preventDefault();grip.setPointerCapture(e.pointerId);start = { pointerX: e.clientX, pointerY: e.clientY, offsetX: x, offsetY: y };});
+
+    grip.addEventListener("pointermove", (e) => {
+      if (!start) return; x = start.offsetX + (e.clientX - start.pointerX);  y = start.offsetY + (e.clientY - start.pointerY);box.style.transform = `translate3d(${x}px, ${y}px, 0)`;});
+
+    const stop = () => { start = null; };
+    grip.addEventListener("pointerup", stop);
+    grip.addEventListener("pointercancel", stop);
+  </script>
 
     </body>
 </html>
