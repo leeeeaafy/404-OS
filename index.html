@@ -1,72 +1,361 @@
 <!DOCTYPE html>
 <html lang="eng">
-    <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404: NOT FOUND!</title>
+
     
-<h1><b>404:NOT FOUND!</b></h1>
-<p><b><i>Did you get lost?</i></b></p>
+<button id="openDraw" class="draw-button" aria-label="Open Drawing App">
+  <img src="HMM.jpg" alt="Hmm">
+</button>
+    <style>
+      html, body {margin: 0;min-height: 100%;font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;color: rgb(4, 4, 71); text-align: center;}
 
- <body>
-<audio controls>
-  <source src="c.wav" type="audio/wav">
-  <source src="c.wav" type=""></audio>
+      body{background-image: url(cloud.jpg)}
 
-<style>
-  html,body { min-height: 100%; }
-html{font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
- color: rgb(4, 4, 71);text-align: center;}
- h1{font-size: 110px;}
- p{font-size: 30px;}
+      h1{font-size: 110px; margin-bottom: 10px }
 
-body{background-image: url(cloud.jpg);}
+      h2{margin-top: 0}
 
-.box { position: relative; z-index: 10; width: 100%;
-      max-width: 672px; height: 52px;  min-height: 220px;  max-height: 520px; border: 1px solid #E7E2DB;
-      border-radius: 22px;background: rgba(255, 255, 255, 0.90);
-     box-shadow: 0 1px 2px rgba(31, 29, 26, 0.04), 0 26px 50px -26px rgba(31, 29, 26, 0.20),
-        0 34px 64px -28px rgba(31, 29, 26, 0.26); will-change: transform; }
+      p{font-size: 30px;}
 
+      .box {position: absolute;z-index: 10; width: 100%;max-width: 672px; min-height: 220px;
+        max-height: 520px;border: 1px solid #e7e2db;
+        border-radius: 22px; background: rgba(255, 255, 255, 0.9);box-shadow:
+          0 1px 2px rgba(31, 29, 26, 0.04),0 26px 50px -26px rgba(31, 29, 26, 0.20), 0 34px 64px -28px rgba(31, 29, 26, 0.26);will-change: transform;}
 
-         .box textarea {display: block; width: 100%; height: 100%; resize: none;
-      padding: 24px; border: 0; border-radius: 22px; background: transparent; color: #1F1D1A;
-      font: inherit; font-size: 17px;line-height: 1.75; outline: none;}
+      .box textarea {display: block;width: 100%;
+        height: 100%; resize: none;padding: 24px;border: 0;border-radius:
+        22px;background:transparent;color:#1f1d1a;font:inherit;font-size: 17px;line-height: 1.75;outline: none; }
 
-    @media (min-width: 640px) { .box textarea { padding: 32px; }}
+      @media(min-width: 640px){.box textarea {padding: 32px;}}
 
-    /* moving thingie */
-    .grip {position: absolute; top: 12px; right: 12px;width: 44px;height: 32px; display: grid; place-items: center; border: 1px solid #E7E2DB;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.70);cursor: grab;touch-action: none;user-select: none;transition: background 0.2s; }
-    .grip:hover { background: #FFFFFF;}
-    .grip:active {cursor: grabbing;}
+      .grip {position:absolute;top:12px;right:12px;width:44px;height:32px;
+        display: grid;place-items: center;border:1px solid #e7e2db;border-radius:999px;background:rgba(255, 255, 255, 0.7);
+        cursor:grab;touch-action:none;user-select:none;transition:background 0.2s;}
 
-    .dots {display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;}
-    .dots span {width: 2.5px; height: 2.5px; border-radius: 50%;background: #B6B1A9;}
- </style>
+  .grip:hover{background:#fff;}
+      .grip:active{cursor:grabbing;}
+.dots{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+ .dots span{width:2.5px;height:2.5px;border-radius:50%;background: #b6b1a9;}
 
- <div class="box" id="box">
-    <textarea id="editor" aria-label="Text box" spellcheck="false" autofocus></textarea>
-    <div class="grip" id="grip" role="button" aria-label="Move text box">
-      <div class="dots">
-        <span></span><span></span><span></span>
+     .draw-button {
+  margin-top: 18px;
+  width: 72px;
+  height: 72px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.25);
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;}
+
+.draw-button img{width: 100%;height: 100%;object-fit: cover;border-radius: 12px;}
+
+      .draw-window {
+        position: fixed;
+        left: 50%;
+        top: 55%;
+        transform: translate(-50%, -50%);
+        width: min(85vw, 900px);
+        height: 560px;
+        background: rgba(20, 24, 35, 0.96);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+        display: none;
+        z-index: 20;
+      }
+
+      .draw-window.show {
+        display: block;
+      }
+
+      .draw-titlebar {
+        height: 42px;
+        background: rgba(17, 24, 39, 0.96);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px 0 14px;
+        cursor: grab;
+        user-select: none;
+        color: white;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+
+      .draw-titlebar:active {
+        cursor: grabbing;
+      }
+
+      .draw-controls {
+        display: flex;
+        gap: 10px;
+      }
+
+      .draw-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.2);
+        cursor: pointer;
+      }
+
+      .draw-dot.close {background: #c3d6fb;}
+      .draw-dot.minimize {background: #fbfbfa;}
+
+      .draw-toolbar {display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: #1f2937;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        flex-wrap: wrap;}
+
+      .draw-toolbar button,
+      .draw-toolbar input {
+        border: 1px solid rgba(227, 226, 226, 0.12);
+        background: #fbfdff;
+        color: rgba(5, 3, 30, 0.791);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 14px;}
+
+      .draw-toolbar input[type="color"] {width: 42px;height: 36px;padding: 3px;}
+
+      .draw-toolbar input[type="range"] { accent-color: #c3deff; width: 140px;}
+
+      .draw-canvas-wrap{width: 100%;height: calc(100% - 92px);
+        background: #f3f4f6;display: flex;align-items: center;justify-content: center;padding: 16px;}
+
+      canvas{width: 100%;height: 100%;background: white;border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.12);display:block;cursor:crosshair;}
+
+        .video-box{position: absolute;left:100px;top:80px;width: 320px;
+      height:240px;background: rgb(248, 247, 247);
+      border: 2px solid rgba(255,255,255,0.2);border-radius: 10px;box-shadow: 0 12px 30px rgba(0,0,0,0.4);cursor: grab;user-select: none;}
+
+    .video-box:active{cursor:grabbing;}
+
+    video{width:100%;height:100%;display: block;border-radius:8px;object-fit:cover;}
+    </style>
+  </head>
+
+  <body>
+    <h1><b>404:NOT FOUND!</b></h1>
+    <h2>WARNING:???</h2>
+    <p><b><i>Did you get lost?</i></b></p>
+
+    <audio controls>
+      <source src="loss.wav" type="audio/wav" />
+      <source src="loss.wav" type="" />
+    </audio>
+
+     <div id="videoBox" class="video-box">
+    <video id="green" autoplay muted loop>
+      <source src="green.mp4" type="video/mp4" />
+    </video>
+  </div>
+   
+
+    <div class="box" id="box">
+      <textarea id="editor" aria-label="Text box" spellcheck="false" autofocus></textarea>
+      <div class="grip" id="grip" role="button" aria-label="Move text box">
+        <div class="dots">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="drawWindow" class="draw-window">
+      <div class="draw-titlebar" id="drawTitlebar">
+        <span>Drawing App</span>
+        <div class="draw-controls">
+          <div class="draw-dot minimize" id="minimizeBtn" title="Minimize"></div>
+          <div class="draw-dot close" id="closeBtn" title="Close"></div>
+        </div>
       </div>
 
-  <script>
-    const box = document.getElementById("box");
-    const grip = document.getElementById("grip");
+      <div class="draw-toolbar">
+        <button id="clearBtn">Clear</button>
+        <button id="undoBtn">Undo</button>
+        <label>
+          <span>Brush:</span>
+          <input id="brushSize" type="range" min="1" max="30" value="4" />
+        </label>
+        <label>
+          <span>Color:</span>
+          <input id="colorPicker" type="color" value="#1f2937" />
+        </label>
+        <button id="eraserBtn">Eraser</button>
+        <button id="saveBtn">Save PNG</button>
+      </div>
 
-    let x = 0, y = 0;          
-    let start = null;          
+      <div class="draw-canvas-wrap">
+        <canvas id="drawCanvas" width="900" height="500"></canvas>
+      </div>
+    </div>
 
-    grip.addEventListener("pointerdown", (e) => {e.preventDefault();grip.setPointerCapture(e.pointerId);start = { pointerX: e.clientX, pointerY: e.clientY, offsetX: x, offsetY: y };});
+    <script>
+      const videoBox = document.getElementById("videoBox");
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    videoBox.addEventListener("pointerdown", (e) => {isDragging = true;
+      const rect = videoBox.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      videoBox.setPointerCapture(e.pointerId);});
 
-    grip.addEventListener("pointermove", (e) => {
-      if (!start) return; x = start.offsetX + (e.clientX - start.pointerX);  y = start.offsetY + (e.clientY - start.pointerY);box.style.transform = `translate3d(${x}px, ${y}px, 0)`;});
+    videoBox.addEventListener("pointermove", (e)=>{
+      if (!isDragging) return;const x = e.clientX - offsetX; const y = e.clientY - offsetY;
 
-    const stop = () => { start = null; };
-    grip.addEventListener("pointerup", stop);
-    grip.addEventListener("pointercancel", stop);
-  </script>
+    videoBox.style.left = `${x}px`;
+      videoBox.style.top = `${y}px`;});
+    videoBox.addEventListener("pointerup",()=>{isDragging = false;});
+    videoBox.addEventListener("pointerleave",()=>{isDragging = false;});
 
-    </body>
+      
+      const box = document.getElementById("box");
+      const grip = document.getElementById("grip");
+
+      let x = 0, y = 0;
+      let start = null;
+
+      grip.addEventListener("pointerdown", (e) => {e.preventDefault();
+        grip.setPointerCapture(e.pointerId);
+        start = { pointerX: e.clientX,
+          pointerY: e.clientY,
+          offsetX: x,
+          offsetY: y };});
+
+      grip.addEventListener("pointermove", (e) => {
+        if (!start) return;
+        x = start.offsetX + (e.clientX - start.pointerX);
+        y = start.offsetY + (e.clientY - start.pointerY);
+        box.style.transform = `translate3d(${x}px, ${y}px, 0)`;});
+
+      const stop = () => {start = null;};
+
+      grip.addEventListener("pointerup", stop);
+      grip.addEventListener("pointercancel", stop);
+
+      
+      const canvas = document.getElementById("drawCanvas");
+      const ctx = canvas.getContext("2d");
+      const colorPicker = document.getElementById("colorPicker");
+      const brushSize = document.getElementById("brushSize");
+      const clearBtn = document.getElementById("clearBtn");
+      const undoBtn = document.getElementById("undoBtn");
+      const eraserBtn = document.getElementById("eraserBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const drawWindow = document.getElementById("drawWindow");
+      const openDraw = document.getElementById("openDraw");
+      const closeBtn = document.getElementById("closeBtn");
+      const minimizeBtn = document.getElementById("minimizeBtn");
+      const drawTitlebar = document.getElementById("drawTitlebar");
+
+      const history = [];let historyIndex = -1;let drawing =false;
+      let usingEraser =false;
+      let lastX =0;
+      let lastY =0;let dragWindow =false;let dragOffsetX = 0; let dragOffsetY = 0;
+
+      function saveState() {
+        historyIndex++;if (historyIndex < history.length) {history.length = historyIndex;}
+        history.push(canvas.toDataURL());if (history.length > 20) {
+          history.shift();
+          historyIndex--;}}
+
+      function restoreState(index) {
+        const img = new Image();
+        img.src = history[index];
+        img.onload = () => {ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);};}
+
+      function getCanvasPoint(event) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        return {x: (event.clientX - rect.left) * scaleX,
+          y: (event.clientY - rect.top) * scaleY};}
+
+      function startDrawing(event) {
+        drawing = true;
+        const { x,y } = getCanvasPoint(event);
+        lastX = x;lastY = y;ctx.beginPath();ctx.moveTo(x, y);}
+
+      function draw(event) {
+        if (!drawing) return;
+        const { x,y } = getCanvasPoint(event);
+
+        ctx.lineWidth = Number(brushSize.value);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = usingEraser ?"#ffffff" : colorPicker.value; ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();lastX = x;lastY = y;}
+
+      function stopDrawing() {if (!drawing) return;drawing = false;
+        saveState();}
+
+      canvas.addEventListener("pointerdown", startDrawing);
+      canvas.addEventListener("pointermove", draw);
+      canvas.addEventListener("pointerup", stopDrawing);
+      canvas.addEventListener("pointerleave", stopDrawing);
+      canvas.addEventListener("pointercancel", stopDrawing);
+
+      clearBtn.addEventListener("click", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);saveState();});
+
+      undoBtn.addEventListener("click", ()=>{if (historyIndex > 0) {historyIndex--;
+          restoreState(historyIndex);}});
+
+      eraserBtn.addEventListener("click",()=>{usingEraser = !usingEraser;eraserBtn.textContent = usingEraser ? "Brush" : "Eraser";});
+
+      saveBtn.addEventListener("click",()=>{const link = document.createElement("a");
+        link.download = "drawing.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();});
+
+      openDraw.addEventListener("click", ()=>{drawWindow.classList.add("show");});
+
+      closeBtn.addEventListener("click",()=>{drawWindow.classList.remove("show");});
+
+      minimizeBtn.addEventListener("click",()=>{ drawWindow.classList.toggle("show");})
+      drawTitlebar.addEventListener("pointerdown",(e) =>{
+        if (e.target.closest(".draw-dot")) return;
+        dragWindow = true;
+        const rect = drawWindow.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        drawTitlebar.setPointerCapture(e.pointerId);});
+
+      drawTitlebar.addEventListener("pointermove", (e) => {
+        if (!dragWindow) return;
+
+        const x = e.clientX - dragOffsetX;
+        const y = e.clientY - dragOffsetY;
+ drawWindow.style.left = `${x}px`;
+        drawWindow.style.top = `${y}px`;
+        drawWindow.style.transform ="none";});
+
+      drawTitlebar.addEventListener("pointerup", ()=>{dragWindow = false;});
+drawTitlebar.addEventListener("pointercancel", ()=>{dragWindow = false;});
+
+      function initCanvas() {ctx.fillStyle = "#ffffff";ctx.fillRect(0, 0, canvas.width,canvas.height);saveState();}
+
+      initCanvas();
+    </script>
+  </body>
 </html>
