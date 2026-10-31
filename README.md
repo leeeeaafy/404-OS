@@ -8,4 +8,5 @@ my project features are
 -and a place to doodle away.
 -added gallery app(where i put my fav photos)(10/31/26)
 -(added jigsaw game)(10/31/26)
+-music app
 programing language used is css and html. 
