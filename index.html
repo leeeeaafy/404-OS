@@ -5,42 +5,205 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>404: NOT FOUND!</title>
 
-    
-<button id="openDraw" class="draw-button" aria-label="Open Drawing App">
-  <img src="HMM.jpg" alt="Hmm">
-</button>
     <style>
       html, body {margin: 0;min-height: 100%;font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;color: rgb(4, 4, 71); text-align: center;}
-
       body{background-image: url(cloud.jpg)}
-
-      h1{font-size: 110px; margin-bottom: 10px }
-
+      h1{font-size: 110px; margin-bottom: 10px}
       h2{margin-top: 0}
-
       p{font-size: 30px;}
 
-      .box {position: absolute;z-index: 10; width: 100%;max-width: 672px; min-height: 220px;
-        max-height: 520px;border: 1px solid #e7e2db;
-        border-radius: 22px; background: rgba(255, 255, 255, 0.9);box-shadow:
-          0 1px 2px rgba(31, 29, 26, 0.04),0 26px 50px -26px rgba(31, 29, 26, 0.20), 0 34px 64px -28px rgba(31, 29, 26, 0.26);will-change: transform;}
-
-      .box textarea {display: block;width: 100%;
-        height: 100%; resize: none;padding: 24px;border: 0;border-radius:
-        22px;background:transparent;color:#1f1d1a;font:inherit;font-size: 17px;line-height: 1.75;outline: none; }
-
+      .box {position: absolute;z-index: 10; width: 100%;max-width: 672px; min-height: 220px; max-height: 520px;border: 1px solid #e7e2db; border-radius: 22px; background: rgba(255, 255, 255, 0.9);box-shadow: 0 1px 2px rgba(31, 29, 26, 0.04),0 26px 50px -26px rgba(31, 29, 26, 0.20), 0 34px 64px -28px rgba(31, 29, 26, 0.26);will-change: transform;}
+      .box textarea {display: block;width: 100%;height: 100%; resize: none;padding: 24px;border: 0;border-radius:22px;background:transparent;color:#1f1d1a;font:inherit;font-size: 17px;line-height:1.75;outline:none;}
       @media(min-width: 640px){.box textarea {padding: 32px;}}
-
-      .grip {position:absolute;top:12px;right:12px;width:44px;height:32px;
-        display: grid;place-items: center;border:1px solid #e7e2db;border-radius:999px;background:rgba(255, 255, 255, 0.7);
-        cursor:grab;touch-action:none;user-select:none;transition:background 0.2s;}
-
-  .grip:hover{background:#fff;}
+      .grip {position:absolute;top:12px;right:12px;width:44px;height:32px;display:grid;place-items:center;border:1px solid #e7e2db;border-radius:999px;background:rgba(255,255,255,.7);cursor:grab;touch-action:none;user-select:none;transition:background .2s;}
+      .grip:hover{background:#fff;}
       .grip:active{cursor:grabbing;}
-.dots{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
- .dots span{width:2.5px;height:2.5px;border-radius:50%;background: #b6b1a9;}
+      .dots{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+      .dots span{width:2.5px;height:2.5px;border-radius:50%;background:#b6b1a9;}
 
-     .draw-button {
+      .draw-button {margin-top:18px;width:72px;height:72px;padding:8px;border:1px solid rgba(255,255,255,0.4);border-radius:16px;background:rgba(255,255,255,0.25);cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12);display:inline-flex;align-items:center;justify-content:center;}
+      .draw-button img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
+
+      .draw-window {position: fixed;left: 50%;top: 55%;transform: translate(-50%, -50%);width: min(85vw, 900px);height:560px;background: rgba(20,24,35,.96);border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);display:none;z-index:20;}
+      .draw-window.show {display:block;}
+      .draw-titlebar {height:42px;background:rgba(17,24,39,.96);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 14px;cursor:grab;user-select:none;color:white;font-weight:bold;letter-spacing:.5px;}
+      .draw-titlebar:active {cursor:grabbing;}
+      .draw-controls {display:flex;gap:10px;}
+      .draw-dot {width:12px;height:12px;border-radius:50%;border:1px solid rgba(255,255,255,.2);cursor:pointer;}
+      .draw-dot.close {background:#c3d6fb;}
+      .draw-dot.minimize {background:#fbfbfa;}
+      .draw-toolbar {display:flex;align-items:center;gap:12px;padding:10px 14px;background:#1f2937;border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap;}
+      .draw-toolbar button, .draw-toolbar input {border:1px solid rgba(227,226,226,.12);background:#fbfdff;color:rgba(5,3,30,.791);border-radius:10px;padding:8px 12px;font-size:14px;}
+      .draw-toolbar input[type="color"] {width:42px;height:36px;padding:3px;}
+      .draw-toolbar input[type="range"] { accent-color:#c3deff; width:140px;}
+      .draw-canvas-wrap{width:100%;height:calc(100% - 92px);background:#f3f4f6;display:flex;align-items:center;justify-content:center;padding:16px;}
+      canvas{width:100%;height:100%;background:white;border-radius:12px;border:1px solid rgba(0,0,0,.12);display:block;cursor:crosshair;}
+
+      .video-box{position:absolute;left:100px;top:80px;width:320px;height:240px;background:rgb(248,247,247);border:2px solid rgba(255,255,255,.2);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);cursor:grab;user-select:none;}
+      .video-box:active{cursor:grabbing;}
+      video{width:100%;height:100%;display:block;border-radius:8px;object-fit:cover;}
+
+      .gallery-button {margin-top:18px;width:72px;height:72px;padding:8px;border:1px solid rgba(255,255,255,.4);border-radius:16px;background:rgba(255,255,255,.25);cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12);display:inline-flex;align-items:center;justify-content:center;margin-right:12px;}
+      .gallery-button img {width:100%;height:100%;object-fit:cover;border-radius:12px;}
+      .gallery-window {position:fixed;left:50%;top:52%;transform:translate(-50%,-50%);width:min(82vw,860px);height:620px;background:rgba(17,24,39,.98);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;box-shadow:0 28px 80px rgba(0,0,0,.45);z-index:25;display:none;}
+      .gallery-window.show {display:block;}
+      .gallery-titlebar {height:42px;background:rgba(15,23,42,.96);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#fff;font-weight:700;letter-spacing:.4px;cursor:grab;user-select:none;}
+      .gallery-titlebar:active {cursor:grabbing;}
+      .gallery-controls {display:flex;align-items:center;gap:10px;}
+      .gallery-dot {width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,.2);cursor:pointer;}
+      .gallery-dot.minimize {background:#f8f8f5;}
+      .gallery-dot.close {background:#c3d6fb;}
+      .gallery-toolbar {display:flex;align-items:center;gap:10px;padding:12px 14px;background:#1f2937;border-bottom:1px solid rgba(255,255,255,.08);color:#e5e7eb;}
+      .toolbar-label {font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;}
+      .toolbar-pill {padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);font-size:12px;}
+      .gallery-grid {display:grid;grid-template-columns:repeat(3, minmax(140px, 1fr));gap:16px;padding:18px;height:calc(100% - 92px);background:linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%)}
+      .photo-card {position:relative;overflow:hidden;border-radius:16px;background:#dfe7f2;border:1px solid rgba(15,23,42,.08);box-shadow:0 8px 18px rgba(15,23,42,.12);}
+      .photo-card img {width:100%;height:100%;display:block;object-fit:cover;transition:transform .25s ease;}
+      .photo-card:hover img {transform:scale(1.03);}
+      .photo-card figcaption {position:absolute;left:0;right:0;bottom:0;padding:10px 12px;background:linear-gradient(180deg, transparent, rgba(15,23,42,.72));color:#fff;font-size:13px;font-weight:600;letter-spacing:.04em;}
+      @media (max-width:760px){.gallery-window{width:min(90vw,700px);height:520px;} .gallery-grid{grid-template-columns: repeat(2,minmax(140px,1fr));}}
+      @media (max-width:480px){.gallery-grid{grid-template-columns:1fr;}}
+
+      .puzzle-button {
+        margin-top: 18px;
+        width: 72px;
+        height: 72px;
+        padding: 8px;
+        border: 1px solid rgba(255,255,255,0.4);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.25);
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+      }
+      .puzzle-button img {width:100%;height:100%;object-fit:cover;border-radius:12px;}
+      .puzzle-window {
+        position: fixed;
+        left: 52%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: min(86vw, 860px);
+        height: 620px;
+        background: rgba(12, 18, 28, 0.95);
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 28px 80px rgba(0,0,0,.45);
+        z-index: 30;
+        display: none;
+      }
+      .puzzle-window.show {display:block;}
+      .puzzle-titlebar {
+        height: 42px;
+        background: rgba(15,23,42,.96);
+        border-bottom:1px solid rgba(255,255,255,.08);
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:0 14px;
+        color:#fff;
+        font-weight:700;
+        letter-spacing:.4px;
+        cursor:grab;
+        user-select:none;
+      }
+      .puzzle-titlebar:active {cursor:grabbing;}
+      .puzzle-controls {display:flex;align-items:center;gap:10px;}
+      .puzzle-dot {width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,.2);cursor:pointer;}
+      .puzzle-dot.minimize {background:#f8f8f5;}
+      .puzzle-dot.close {background:#c3d6fb;}
+      .puzzle-toolbar {
+        display:flex;
+        align-items:center;
+        gap:12px;
+        padding:12px 14px;
+        background:#1f2937;
+        border-bottom:1px solid rgba(255,255,255,.08);
+        color:#e5e7eb;
+        flex-wrap:wrap;
+      }
+      .upload-label {
+        position:relative;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        background:rgba(255,255,255,.08);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:10px;
+        padding:8px 12px;
+        font-size:13px;
+        cursor:pointer;
+      }
+      .upload-label input {display:none;}
+      .puzzle-toolbar button {
+        border:1px solid rgba(255,255,255,.12);
+        background:#f9fafb;
+        color:#111827;
+        border-radius:10px;
+        padding:8px 12px;
+        font-size:14px;
+        cursor:pointer;
+      }
+      .puzzle-board-wrap {
+        position:relative;
+        width:100%;
+        height:calc(100% - 92px);
+        background:linear-gradient(180deg, #e5e7eb 0%, #f3f4f6 100%);
+        padding:16px;
+        box-sizing:border-box;
+      }
+      .puzzle-board {
+        position:relative;
+        width:100%;
+        height:100%;
+        background:#fff;
+        border:1px solid rgba(15,23,42,.12);
+        border-radius:14px;
+        overflow:hidden;
+        box-shadow: inset 0 0 20px rgba(15,23,42,.08);
+      }
+      .puzzle-piece {
+        position:absolute;
+        border:2px solid rgba(255,255,255,.75);
+        box-shadow:0 8px 18px rgba(15,23,42,.15);
+        border-radius:10px;
+        user-select:none;
+        cursor:grab;
+        background-repeat:no-repeat;
+        transition:box-shadow .15s ease, transform .15s ease;
+      }
+      .puzzle-piece.dragging {
+        z-index:10;
+        cursor:grabbing;
+        box-shadow:0 18px 30px rgba(15,23,42,.2);
+        transform:scale(1.02);
+      }
+      .puzzle-piece.locked {
+        box-shadow:0 0 0 2px rgba(34,197,94,.6);
+      }
+      .puzzle-status {
+        position:absolute;
+        left:50%;
+        bottom:14px;
+        transform:translateX(-50%);
+        background:rgba(15,23,42,.78);
+        color:#fff;
+        border-radius:999px;
+        padding:7px 12px;
+        font-size:12px;
+        letter-spacing:.06em;
+        text-transform:uppercase;
+        pointer-events:none;
+      }
+      @media (max-width: 560px){
+        .puzzle-window{height:520px;}
+
+      }
+
+      .music-button {
   margin-top: 18px;
   width: 72px;
   height: 72px;
@@ -52,99 +215,217 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
   display: inline-flex;
   align-items: center;
-  justify-content: center;}
+  justify-content: center;
+  margin-right: 12px;
+}
+.music-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
 
-.draw-button img{width: 100%;height: 100%;object-fit: cover;border-radius: 12px;}
+.music-window {
+  position: fixed;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  width: min(84vw, 860px);
+  height: 560px;
+  background: rgba(11, 16, 28, 0.96);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0,0,0,.45);
+  z-index: 26;
+  display: none;
+}
+.music-window.show { display: block; }
 
-      .draw-window {
-        position: fixed;
-        left: 50%;
-        top: 55%;
-        transform: translate(-50%, -50%);
-        width: min(85vw, 900px);
-        height: 560px;
-        background: rgba(20, 24, 35, 0.96);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-        display: none;
-        z-index: 20;
-      }
+.music-titlebar {
+  height: 42px;
+  background: rgba(15,23,42,.96);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .4px;
+  cursor: grab;
+  user-select: none;
+}
+.music-titlebar:active { cursor: grabbing; }
 
-      .draw-window.show {
-        display: block;
-      }
+.music-controls { display: flex; align-items: center; gap: 10px; }
+.music-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,.2);
+  cursor: pointer;
+}
+.music-dot.minimize { background: #f8f8f5; }
+.music-dot.close { background: #c3d6fb; }
 
-      .draw-titlebar {
-        height: 42px;
-        background: rgba(17, 24, 39, 0.96);
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 12px 0 14px;
-        cursor: grab;
-        user-select: none;
-        color: white;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-      }
+.music-body {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: calc(100% - 42px);
+  background: linear-gradient(180deg, #121a2b 0%, #182235 100%);
+}
 
-      .draw-titlebar:active {
-        cursor: grabbing;
-      }
+.music-sidebar {
+  background: rgba(17,24,39,.82);
+  border-right: 1px solid rgba(255,255,255,.08);
+  padding: 18px 14px;
+}
+.music-sidebar-header {
+  color: #dbeafe;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .8;
+  margin-bottom: 14px;
+}
+.music-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.track-item {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  color: #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+.track-item:hover { background: rgba(255,255,255,.09); }
+.track-item.active {
+  background: linear-gradient(90deg, rgba(96,165,250,.22), rgba(192,132,252,.18));
+  border-color: rgba(147,197,253,.4);
+}
+.track-title {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.track-artist {
+  display: block;
+  font-size: 12px;
+  opacity: .75;
+}
 
-      .draw-controls {
-        display: flex;
-        gap: 10px;
-      }
+.music-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 22px;
+  color: #eef2ff;
+}
+.album-art {
+  width: min(32vw, 250px);
+  aspect-ratio: 1;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 20px 50px rgba(96,165,250,.25);
+  margin-bottom: 20px;
+}
+.album-inner {
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  background: rgba(9,12,28,.42);
+  display: grid;
+  place-items: center;
+  font-size: 56px;
+  border: 1px solid rgba(255,255,255,.2);
+}
 
-      .draw-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.2);
-        cursor: pointer;
-      }
+.track-meta {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.track-meta h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw, 2.2rem);
+}
+.track-meta p {
+  margin: 8px 0 0;
+  color: #cbd5e1;
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 
-      .draw-dot.close {background: #c3d6fb;}
-      .draw-dot.minimize {background: #fbfbfa;}
+.music-progress-wrap {
+  width: min(70%, 520px);
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 18px;
+  color: #dfe7ff;
+  font-size: 12px;
+}
+.music-progress-wrap input[type="range"],
+.music-volume-row input[type="range"] {
+  width: 100%;
+  accent-color: #a5d8ff;
+}
 
-      .draw-toolbar {display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 14px;
-        background: #1f2937;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        flex-wrap: wrap;}
+.music-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.music-controls-row button {
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+.music-controls-row .play {
+  width: 58px;
+  height: 58px;
+  background: linear-gradient(135deg, #93c5fd, #c4b5fd);
+  color: #07162d;
+  font-weight: 700;
+}
 
-      .draw-toolbar button,
-      .draw-toolbar input {
-        border: 1px solid rgba(227, 226, 226, 0.12);
-        background: #fbfdff;
-        color: rgba(5, 3, 30, 0.791);
-        border-radius: 10px;
-        padding: 8px 12px;
-        font-size: 14px;}
+.music-volume-row {
+  width: min(70%, 360px);
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 12px;
+  color: #dfe7ff;
+}
 
-      .draw-toolbar input[type="color"] {width: 42px;height: 36px;padding: 3px;}
-
-      .draw-toolbar input[type="range"] { accent-color: #c3deff; width: 140px;}
-
-      .draw-canvas-wrap{width: 100%;height: calc(100% - 92px);
-        background: #f3f4f6;display: flex;align-items: center;justify-content: center;padding: 16px;}
-
-      canvas{width: 100%;height: 100%;background: white;border-radius: 12px;
-        border: 1px solid rgba(0,0,0,0.12);display:block;cursor:crosshair;}
-
-        .video-box{position: absolute;left:100px;top:80px;width: 320px;
-      height:240px;background: rgb(248, 247, 247);
-      border: 2px solid rgba(255,255,255,0.2);border-radius: 10px;box-shadow: 0 12px 30px rgba(0,0,0,0.4);cursor: grab;user-select: none;}
-
-    .video-box:active{cursor:grabbing;}
-
-    video{width:100%;height:100%;display: block;border-radius:8px;object-fit:cover;}
+@media (max-width: 640px) {
+  .music-body {
+    grid-template-columns: 1fr;
+  }
+  .music-sidebar {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    padding-bottom: 10px;
+  }
+}
     </style>
   </head>
 
@@ -158,12 +439,11 @@
       <source src="loss.wav" type="" />
     </audio>
 
-     <div id="videoBox" class="video-box">
-    <video id="green" autoplay muted loop>
-      <source src="green.mp4" type="video/mp4" />
-    </video>
-  </div>
-   
+    <div id="videoBox" class="video-box">
+      <video id="green" autoplay muted loop>
+        <source src="green.mp4" type="video/mp4" />
+      </video>
+    </div>
 
     <div class="box" id="box">
       <textarea id="editor" aria-label="Text box" spellcheck="false" autofocus></textarea>
@@ -205,51 +485,397 @@
       </div>
     </div>
 
+    <button id="openDraw" class="draw-button" aria-label="Open Drawing App">
+      <img src="HMM.jpg" alt="Hmm">
+    </button>
+
+    <button id="openGallery" class="gallery-button" aria-label="Open Gallery App">
+      <img src="starr.jpg" alt="Gallery">
+    </button>
+
+    <button id="openPuzzle" class="puzzle-button" aria-label="Open Puzzle App">
+      <img src="color.jpg" alt="Puzzle">
+    </button>
+
+    <div id="galleryWindow" class="gallery-window">
+      <div class="gallery-titlebar" id="galleryTitlebar">
+        <span>Photo Gallery</span>
+        <div class="gallery-controls">
+          <div class="gallery-dot minimize" id="galleryMinimizeBtn" title="Minimize"></div>
+          <div class="gallery-dot close" id="galleryCloseBtn" title="Close"></div>
+        </div>
+      </div>
+
+      <div class="gallery-toolbar">
+        <span class="toolbar-label">6 Photos</span>
+        <div class="toolbar-pill">Grid</div>
+        <div class="toolbar-pill">Favorites</div>
+      </div>
+
+      <div class="gallery-grid">
+        <figure class="photo-card">
+          <img src="cab.JPG" alt="kibby">
+          <figcaption>cat</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+          <img src="squ.JPG" alt="demon">
+          <figcaption>squ</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+          <img src="HMM.jpg" alt="butter">
+          <figcaption>fly</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+          <img src="color.jpg" alt="error">
+          <figcaption>error</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+          <img src="cloud.JPEG" alt="cloud">
+          <figcaption>cloud</figcaption>
+        </figure>
+
+        <figure class="photo-card">
+          <img src="de.png" alt="de">
+          <figcaption>carr</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div id="puzzleWindow" class="puzzle-window">
+      <div class="puzzle-titlebar" id="puzzleTitlebar">
+        <span>Photo Puzzle</span>
+        <div class="puzzle-controls">
+          <div class="puzzle-dot minimize" id="puzzleMinimizeBtn" title="Minimize"></div>
+          <div class="puzzle-dot close" id="puzzleCloseBtn" title="Close"></div>
+        </div>
+      </div>
+
+      <div class="puzzle-toolbar">
+        <label class="upload-label">
+          <input id="puzzleUpload" type="file" accept="image/*" />
+          <span>Upload Photo</span>
+        </label>
+        <button id="shufflePuzzleBtn" type="button">Shuffle</button>
+        <button id="resetPuzzleBtn" type="button">Reset</button>
+      </div>
+
+      <div class="puzzle-board-wrap">
+        <div id="puzzleBoard" class="puzzle-board"></div>
+        <div id="puzzleStatus" class="puzzle-status">Drag pieces to solve</div>
+      </div>
+    </div>
+
+    <button id="openMusic" class="music-button" aria-label="Open Music App">
+  <img src="HMM.jpg" alt="Music">
+</button>
+
+<div id="musicWindow" class="music-window">
+  <div class="music-titlebar" id="musicTitlebar">
+    <span>Music App</span>
+    <div class="music-controls">
+      <div class="music-dot minimize" id="musicMinimizeBtn" title="Minimize"></div>
+      <div class="music-dot close" id="musicCloseBtn" title="Close"></div>
+    </div>
+  </div>
+
+  <div class="music-body">
+    <aside class="music-sidebar" style="display:none;">
+      <div class="music-sidebar-header">Library</div>
+      <div id="musicTrackList" class="music-track-list"></div>
+    </aside>
+
+    <main class="music-player">
+      <div class="album-art">
+        <div class="album-inner">♫</div>
+      </div>
+
+      <div class="track-meta" style="display:none;">
+        <h3 id="musicTitle">Night Signal</h3>
+        <p id="musicArtist">Afterglow</p>
+      </div>
+
+      <div class="music-progress-wrap">
+        <span id="musicCurrentTime">0:00</span>
+        <input id="musicProgress" type="range" min="0" max="100" value="0" />
+        <span id="musicDuration">0:00</span>
+      </div>
+
+      <div class="music-controls-row">
+        <button id="musicPrev" type="button">⏮</button>
+        <button id="musicPlay" type="button" class="play">▶</button>
+        <button id="musicNext" type="button">⏭</button>
+      </div>
+
+      <div class="music-volume-row">
+        <span>🔊</span>
+        <input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.7" />
+      </div>
+
+      <audio id="musicAudio" preload="metadata" src="loss.wav"></audio>
+    </main>
+  </div>
+</div>
+
+
     <script>
+
+  const openMusic = document.getElementById("openMusic");
+  const musicWindow = document.getElementById("musicWindow");
+  const musicCloseBtn = document.getElementById("musicCloseBtn");
+  const musicMinimizeBtn = document.getElementById("musicMinimizeBtn");
+  const musicTitlebar = document.getElementById("musicTitlebar");
+
+  openMusic.addEventListener("click", () => {
+    musicWindow.classList.add("show");
+  });
+
+  musicCloseBtn.addEventListener("click", () => {
+    musicWindow.classList.remove("show");
+  });
+
+  musicMinimizeBtn.addEventListener("click", () => {
+    musicWindow.classList.toggle("show");
+  });
+
+  let musicDrag = false;
+  let musicDragOffsetX = 0;
+  let musicDragOffsetY = 0;
+
+  musicTitlebar.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".music-dot")) return;
+
+    musicDrag = true;
+    const rect = musicWindow.getBoundingClientRect();
+    musicDragOffsetX = e.clientX - rect.left;
+    musicDragOffsetY = e.clientY - rect.top;
+    musicTitlebar.setPointerCapture(e.pointerId);
+  });
+
+  musicTitlebar.addEventListener("pointermove", (e) => {
+    if (!musicDrag) return;
+
+    const x = e.clientX - musicDragOffsetX;
+    const y = e.clientY - musicDragOffsetY;
+
+    musicWindow.style.left = `${x}px`;
+    musicWindow.style.top = `${y}px`;
+    musicWindow.style.transform = "none";
+  });
+
+  musicTitlebar.addEventListener("pointerup", () => {
+    musicDrag = false;
+  });
+
+  musicTitlebar.addEventListener("pointercancel", () => {
+    musicDrag = false;
+  });
+
+  const musicTracks = [
+    { title: "Hidden", artist: "Hidden", src: "loss.wav" },
+    { title: "Hidden", artist: "Hidden", src: "loss.wav" },
+    { title: "Hidden", artist: "Hidden", src: "loss.wav" }
+  ];
+
+  const musicAudio = document.getElementById("musicAudio");
+  const musicCurrentTime = document.getElementById("musicCurrentTime");
+  const musicDuration = document.getElementById("musicDuration");
+  const musicProgress = document.getElementById("musicProgress");
+  const musicVolume = document.getElementById("musicVolume");
+  const musicPlay = document.getElementById("musicPlay");
+  const musicPrev = document.getElementById("musicPrev");
+  const musicNext = document.getElementById("musicNext");
+  const musicTrackList = document.getElementById("musicTrackList");
+
+  let currentTrackIndex = 0;
+
+  function formatTime(time) {
+    if (!Number.isFinite(time) || time < 0) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  function renderTracks() {
+    musicTrackList.innerHTML = "";
+  }
+
+  function loadTrack() {
+    const track = musicTracks[currentTrackIndex];
+    musicAudio.src = track.src;
+    musicAudio.load();
+    renderTracks();
+  }
+
+  function togglePlay() {
+    if (musicAudio.paused) {
+      musicAudio.play();
+      musicPlay.textContent = "❚❚";
+    } else {
+      musicAudio.pause();
+      musicPlay.textContent = "▶";
+    }
+  }
+
+  function nextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+    loadTrack();
+    musicAudio.play();
+    musicPlay.textContent = "❚❚";
+  }
+
+  function prevTrack() {
+    currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
+    loadTrack();
+    musicAudio.play();
+    musicPlay.textContent = "❚❚";
+  }
+
+  musicPlay.addEventListener("click", togglePlay);
+  musicNext.addEventListener("click", nextTrack);
+  musicPrev.addEventListener("click", prevTrack);
+
+  musicAudio.addEventListener("loadedmetadata", () => {
+    musicDuration.textContent = formatTime(musicAudio.duration);
+    musicProgress.max = musicAudio.duration || 100;
+  });
+
+  musicAudio.addEventListener("timeupdate", () => {
+    musicCurrentTime.textContent = formatTime(musicAudio.currentTime);
+    musicProgress.value = musicAudio.currentTime;
+  });
+
+  musicAudio.addEventListener("ended", nextTrack);
+  musicAudio.addEventListener("play", () => {
+    musicPlay.textContent = "❚❚";
+  });
+  musicAudio.addEventListener("pause", () => {
+    musicPlay.textContent = "▶";
+  });
+
+  musicProgress.addEventListener("input", () => {
+    musicAudio.currentTime = Number(musicProgress.value);
+  });
+
+  musicVolume.addEventListener("input", () => {
+    musicAudio.volume = Number(musicVolume.value);
+  });
+
+  musicAudio.volume = Number(musicVolume.value);
+  loadTrack();
+
+      const openGallery = document.getElementById("openGallery");
+      const galleryWindow = document.getElementById("galleryWindow");
+      const galleryCloseBtn = document.getElementById("galleryCloseBtn");
+      const galleryMinimizeBtn = document.getElementById("galleryMinimizeBtn");
+      const galleryTitlebar = document.getElementById("galleryTitlebar");
+
+      openGallery.addEventListener("click", () => {
+        galleryWindow.classList.add("show");
+      });
+
+      galleryCloseBtn.addEventListener("click", () => {
+        galleryWindow.classList.remove("show");
+      });
+
+      galleryMinimizeBtn.addEventListener("click", () => {
+        galleryWindow.classList.toggle("show");
+      });
+
+      let galleryDrag = false;
+      let galleryDragOffsetX = 0;
+      let galleryDragOffsetY = 0;
+
+      galleryTitlebar.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".gallery-dot")) return;
+
+        galleryDrag = true;
+        const rect = galleryWindow.getBoundingClientRect();
+        galleryDragOffsetX = e.clientX - rect.left;
+        galleryDragOffsetY = e.clientY - rect.top;
+        galleryTitlebar.setPointerCapture(e.pointerId);
+      });
+
+      galleryTitlebar.addEventListener("pointermove", (e) => {
+        if (!galleryDrag) return;
+
+        const x = e.clientX - galleryDragOffsetX;
+        const y = e.clientY - galleryDragOffsetY;
+
+        galleryWindow.style.left = `${x}px`;
+        galleryWindow.style.top = `${y}px`;
+        galleryWindow.style.transform = "none";
+      });
+
+      galleryTitlebar.addEventListener("pointerup", () => {
+        galleryDrag = false;
+      });
+
+      galleryTitlebar.addEventListener("pointercancel", () => {
+        galleryDrag = false;
+      });
+
       const videoBox = document.getElementById("videoBox");
-    let isDragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
-    videoBox.addEventListener("pointerdown", (e) => {isDragging = true;
-      const rect = videoBox.getBoundingClientRect();
-      offsetX = e.clientX - rect.left;
-      offsetY = e.clientY - rect.top;
-      videoBox.setPointerCapture(e.pointerId);});
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
 
-    videoBox.addEventListener("pointermove", (e)=>{
-      if (!isDragging) return;const x = e.clientX - offsetX; const y = e.clientY - offsetY;
+      videoBox.addEventListener("pointerdown", (e) => {
+        isDragging = true;
+        const rect = videoBox.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        videoBox.setPointerCapture(e.pointerId);
+      });
 
-    videoBox.style.left = `${x}px`;
-      videoBox.style.top = `${y}px`;});
-    videoBox.addEventListener("pointerup",()=>{isDragging = false;});
-    videoBox.addEventListener("pointerleave",()=>{isDragging = false;});
+      videoBox.addEventListener("pointermove", (e) => {
+        if (!isDragging) return;
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+        videoBox.style.left = `${x}px`;
+        videoBox.style.top = `${y}px`;
+      });
 
-      
+      videoBox.addEventListener("pointerup", () => {
+        isDragging = false;
+      });
+
+      videoBox.addEventListener("pointerleave", () => {
+        isDragging = false;
+      });
+
       const box = document.getElementById("box");
       const grip = document.getElementById("grip");
 
       let x = 0, y = 0;
       let start = null;
 
-      grip.addEventListener("pointerdown", (e) => {e.preventDefault();
+      grip.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
         grip.setPointerCapture(e.pointerId);
-        start = { pointerX: e.clientX,
+        start = {
+          pointerX: e.clientX,
           pointerY: e.clientY,
           offsetX: x,
-          offsetY: y };});
+          offsetY: y
+        };
+      });
 
       grip.addEventListener("pointermove", (e) => {
         if (!start) return;
         x = start.offsetX + (e.clientX - start.pointerX);
         y = start.offsetY + (e.clientY - start.pointerY);
-        box.style.transform = `translate3d(${x}px, ${y}px, 0)`;});
+        box.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      });
 
-      const stop = () => {start = null;};
+      const stop = () => { start = null; };
 
       grip.addEventListener("pointerup", stop);
       grip.addEventListener("pointercancel", stop);
 
-      
       const canvas = document.getElementById("drawCanvas");
       const ctx = canvas.getContext("2d");
       const colorPicker = document.getElementById("colorPicker");
@@ -264,50 +890,76 @@
       const minimizeBtn = document.getElementById("minimizeBtn");
       const drawTitlebar = document.getElementById("drawTitlebar");
 
-      const history = [];let historyIndex = -1;let drawing =false;
-      let usingEraser =false;
-      let lastX =0;
-      let lastY =0;let dragWindow =false;let dragOffsetX = 0; let dragOffsetY = 0;
+      const history = [];
+      let historyIndex = -1;
+      let drawing = false;
+      let usingEraser = false;
+      let lastX = 0;
+      let lastY = 0;
+      let dragWindow = false;
+      let dragOffsetX = 0;
+      let dragOffsetY = 0;
 
       function saveState() {
-        historyIndex++;if (historyIndex < history.length) {history.length = historyIndex;}
-        history.push(canvas.toDataURL());if (history.length > 20) {
+        historyIndex++;
+        if (historyIndex < history.length) { history.length = historyIndex; }
+        history.push(canvas.toDataURL());
+        if (history.length > 20) {
           history.shift();
-          historyIndex--;}}
+          historyIndex--;
+        }
+      }
 
       function restoreState(index) {
         const img = new Image();
         img.src = history[index];
-        img.onload = () => {ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0);};}
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+        };
+      }
 
       function getCanvasPoint(event) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
 
-        return {x: (event.clientX - rect.left) * scaleX,
-          y: (event.clientY - rect.top) * scaleY};}
+        return {
+          x: (event.clientX - rect.left) * scaleX,
+          y: (event.clientY - rect.top) * scaleY
+        };
+      }
 
       function startDrawing(event) {
         drawing = true;
-        const { x,y } = getCanvasPoint(event);
-        lastX = x;lastY = y;ctx.beginPath();ctx.moveTo(x, y);}
+        const { x, y } = getCanvasPoint(event);
+        lastX = x;
+        lastY = y;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
 
       function draw(event) {
         if (!drawing) return;
-        const { x,y } = getCanvasPoint(event);
+        const { x, y } = getCanvasPoint(event);
 
         ctx.lineWidth = Number(brushSize.value);
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
-        ctx.strokeStyle = usingEraser ?"#ffffff" : colorPicker.value; ctx.beginPath();
+        ctx.strokeStyle = usingEraser ? "#ffffff" : colorPicker.value;
+        ctx.beginPath();
         ctx.moveTo(lastX, lastY);
         ctx.lineTo(x, y);
-        ctx.stroke();lastX = x;lastY = y;}
+        ctx.stroke();
+        lastX = x;
+        lastY = y;
+      }
 
-      function stopDrawing() {if (!drawing) return;drawing = false;
-        saveState();}
+      function stopDrawing() {
+        if (!drawing) return;
+        drawing = false;
+        saveState();
+      }
 
       canvas.addEventListener("pointerdown", startDrawing);
       canvas.addEventListener("pointermove", draw);
@@ -316,24 +968,33 @@
       canvas.addEventListener("pointercancel", stopDrawing);
 
       clearBtn.addEventListener("click", () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);saveState();});
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveState();});
 
-      undoBtn.addEventListener("click", ()=>{if (historyIndex > 0) {historyIndex--;
+      undoBtn.addEventListener("click", () => {
+        if (historyIndex > 0) {historyIndex--;
           restoreState(historyIndex);}});
 
-      eraserBtn.addEventListener("click",()=>{usingEraser = !usingEraser;eraserBtn.textContent = usingEraser ? "Brush" : "Eraser";});
+      eraserBtn.addEventListener("click", () => {
+        usingEraser = !usingEraser;
+        eraserBtn.textContent = usingEraser ? "Brush" : "Eraser";});
 
-      saveBtn.addEventListener("click",()=>{const link = document.createElement("a");
+      saveBtn.addEventListener("click", () => {
+        const link = document.createElement("a");
         link.download = "drawing.png";
         link.href = canvas.toDataURL("image/png");
         link.click();});
 
-      openDraw.addEventListener("click", ()=>{drawWindow.classList.add("show");});
+      openDraw.addEventListener("click", () => {
+        drawWindow.classList.add("show");});
 
-      closeBtn.addEventListener("click",()=>{drawWindow.classList.remove("show");});
+      closeBtn.addEventListener("click", () => {
+        drawWindow.classList.remove("show");});
 
-      minimizeBtn.addEventListener("click",()=>{ drawWindow.classList.toggle("show");})
-      drawTitlebar.addEventListener("pointerdown",(e) =>{
+      minimizeBtn.addEventListener("click", () => {
+        drawWindow.classList.toggle("show");});
+
+      drawTitlebar.addEventListener("pointerdown", (e) => {
         if (e.target.closest(".draw-dot")) return;
         dragWindow = true;
         const rect = drawWindow.getBoundingClientRect();
@@ -346,16 +1007,275 @@
 
         const x = e.clientX - dragOffsetX;
         const y = e.clientY - dragOffsetY;
- drawWindow.style.left = `${x}px`;
+        drawWindow.style.left = `${x}px`;
         drawWindow.style.top = `${y}px`;
-        drawWindow.style.transform ="none";});
+        drawWindow.style.transform = "none";
+      });
 
-      drawTitlebar.addEventListener("pointerup", ()=>{dragWindow = false;});
-drawTitlebar.addEventListener("pointercancel", ()=>{dragWindow = false;});
+      drawTitlebar.addEventListener("pointerup", () => {
+        dragWindow = false;
+      });
 
-      function initCanvas() {ctx.fillStyle = "#ffffff";ctx.fillRect(0, 0, canvas.width,canvas.height);saveState();}
+      drawTitlebar.addEventListener("pointercancel", () => {
+        dragWindow = false;
+      });
+
+      function initCanvas() {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        saveState();
+      }
 
       initCanvas();
+
+      const puzzleWindow = document.getElementById("puzzleWindow");
+      const openPuzzleBtn = document.getElementById("openPuzzle");
+      const puzzleCloseBtn = document.getElementById("puzzleCloseBtn");
+      const puzzleMinimizeBtn = document.getElementById("puzzleMinimizeBtn");
+      const puzzleTitlebar = document.getElementById("puzzleTitlebar");
+      const puzzleUpload = document.getElementById("puzzleUpload");
+      const puzzleBoard = document.getElementById("puzzleBoard");
+      const shufflePuzzleBtn = document.getElementById("shufflePuzzleBtn");
+      const resetPuzzleBtn = document.getElementById("resetPuzzleBtn");
+      const puzzleStatus = document.getElementById("puzzleStatus");
+
+      let puzzleRows = 3;
+      let puzzleCols = 3;
+      let currentImage = createDefaultPuzzleImage();
+      let puzzlePieces = [];
+      let draggedPiece = null;
+      let puzzleDrag = false;
+      let puzzleDragOffsetX = 0;
+      let puzzleDragOffsetY = 0;
+
+      function createDefaultPuzzleImage() {
+        const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="700">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#7dd3fc" />
+                <stop offset="30%" stop-color="#a78bfa" />
+                <stop offset="70%" stop-color="#f9a8d4" />
+                <stop offset="100%" stop-color="#fcd34d" />
+              </linearGradient>
+            </defs>
+            <rect width="900" height="700" fill="url(#g)" />
+            <circle cx="220" cy="210" r="140" fill="rgba(255,255,255,.25)" />
+            <circle cx="670" cy="440" r="180" fill="rgba(255,255,255,.18)" />
+            <path d="M0,530 C220,430 360,610 530,530 S820,420 900,470 L900,700 L0,700 Z" fill="rgba(255,255,255,.28)" />
+            <rect x="140" y="160" width="640" height="300" rx="24" fill="rgba(15,23,42,.18)" />
+            <text x="450" y="310" font-size="88" font-family="Verdana" text-anchor="middle" fill="#ffffff" font-weight="700">PUZZLE</text>
+          </svg>
+        `;
+        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      }
+
+      function openPuzzleApp() {
+        puzzleWindow.classList.add("show");
+      }
+
+      function closePuzzleApp() {
+        puzzleWindow.classList.remove("show");
+      }
+
+      function minimizePuzzleApp() {
+        puzzleWindow.classList.toggle("show");
+      }
+
+      openPuzzleBtn.addEventListener("click", openPuzzleApp);
+      puzzleCloseBtn.addEventListener("click", closePuzzleApp);
+      puzzleMinimizeBtn.addEventListener("click", minimizePuzzleApp);
+
+      puzzleTitlebar.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".puzzle-dot")) return;
+        puzzleDrag = true;
+        const rect = puzzleWindow.getBoundingClientRect();
+        puzzleDragOffsetX = e.clientX - rect.left;
+        puzzleDragOffsetY = e.clientY - rect.top;
+        puzzleTitlebar.setPointerCapture(e.pointerId);
+      });
+
+      puzzleTitlebar.addEventListener("pointermove", (e) => {
+        if (!puzzleDrag) return;
+        const x = e.clientX - puzzleDragOffsetX;
+        const y = e.clientY - puzzleDragOffsetY;
+        puzzleWindow.style.left = `${x}px`;
+        puzzleWindow.style.top = `${y}px`;
+        puzzleWindow.style.transform = "none";
+      });
+
+      puzzleTitlebar.addEventListener("pointerup", () => { puzzleDrag = false; });
+      puzzleTitlebar.addEventListener("pointercancel", () => { puzzleDrag = false; });
+
+      function renderPuzzle() {
+        puzzleBoard.innerHTML = "";
+        puzzlePieces = [];
+        const boardWidth = puzzleBoard.clientWidth;
+        const boardHeight = puzzleBoard.clientHeight;
+        const pieceW = boardWidth / puzzleCols;
+        const pieceH = boardHeight / puzzleRows;
+
+        for (let row = 0; row < puzzleRows; row++) {
+          for (let col = 0; col < puzzleCols; col++) {
+            const piece = document.createElement("div");
+            piece.className = "puzzle-piece";
+            piece.dataset.row = row;
+            piece.dataset.col = col;
+
+            const targetX = col * pieceW;
+            const targetY = row * pieceH;
+
+            piece.style.width = `${pieceW}px`;
+            piece.style.height = `${pieceH}px`;
+            piece.style.backgroundImage = `url("${currentImage}")`;
+            piece.style.backgroundSize = `${boardWidth}px ${boardHeight}px`;
+            piece.style.backgroundPosition = `${-col * pieceW}px ${-row * pieceH}px`;
+            piece.dataset.targetX = String(targetX);
+            piece.dataset.targetY = String(targetY);
+
+            const randomX = Math.random() * (boardWidth - pieceW);
+            const randomY = Math.random() * (boardHeight - pieceH);
+
+            piece.style.left = `${randomX}px`;
+            piece.style.top = `${randomY}px`;
+
+            piece.addEventListener("pointerdown", startPieceDrag);
+            puzzleBoard.appendChild(piece);
+            puzzlePieces.push(piece);
+          }
+        }
+      }
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function startPieceDrag(e) {
+        const piece = e.currentTarget;
+        draggedPiece = piece;
+        piece.classList.add("dragging");
+        piece.setPointerCapture(e.pointerId);
+
+        const rect = piece.getBoundingClientRect();
+        const boardRect = puzzleBoard.getBoundingClientRect();
+
+        const offsetX = e.clientX - rect.left;
+        const offsetY = e.clientY - rect.top;
+
+        piece.dataset.offsetX = String(offsetX);
+        piece.dataset.offsetY = String(offsetY);
+        piece.dataset.startLeft = String(piece.offsetLeft);
+        piece.dataset.startTop = String(piece.offsetTop);
+
+        piece.addEventListener("pointermove", movePieceDrag);
+        piece.addEventListener("pointerup", endPieceDrag);
+        piece.addEventListener("pointercancel", endPieceDrag);
+      }
+
+      function movePieceDrag(e) {
+        if (!draggedPiece) return;
+
+        const boardRect = puzzleBoard.getBoundingClientRect();
+        const piece = draggedPiece;
+        const offsetX = Number(piece.dataset.offsetX);
+        const offsetY = Number(piece.dataset.offsetY);
+
+        const maxX = boardRect.width - piece.offsetWidth;
+        const maxY = boardRect.height - piece.offsetHeight;
+
+        let x = e.clientX - boardRect.left - offsetX;
+        let y = e.clientY - boardRect.top - offsetY;
+
+        x = clamp(x, 0, maxX);
+        y = clamp(y, 0, maxY);
+
+        piece.style.left = `${x}px`;
+        piece.style.top = `${y}px`;
+      }
+
+      function endPieceDrag(e) {
+        if (!draggedPiece) return;
+
+        const piece = draggedPiece;
+        const targetX = Number(piece.dataset.targetX);
+        const targetY = Number(piece.dataset.targetY);
+        const currentX = parseFloat(piece.style.left);
+        const currentY = parseFloat(piece.style.top);
+
+        const distance = Math.hypot(currentX - targetX, currentY - targetY);
+
+        if (distance < 35) {
+          piece.style.left = `${targetX}px`;
+          piece.style.top = `${targetY}px`;
+          piece.classList.add("locked");
+        }
+
+        piece.classList.remove("dragging");
+        piece.removeEventListener("pointermove", movePieceDrag);
+        piece.removeEventListener("pointerup", endPieceDrag);
+        piece.removeEventListener("pointercancel", endPieceDrag);
+
+        draggedPiece = null;
+        checkPuzzleSolved();
+      }
+
+      function checkPuzzleSolved() {
+        const allLocked = puzzlePieces.every((piece) => piece.classList.contains("locked"));
+        if (allLocked) {
+          puzzleStatus.textContent = "Solved!";
+        } else {
+          puzzleStatus.textContent = "Drag pieces to solve";
+        }
+      }
+
+      function shufflePuzzle() {
+        const boardWidth = puzzleBoard.clientWidth;
+        const boardHeight = puzzleBoard.clientHeight;
+
+        puzzlePieces.forEach((piece) => {
+          const pieceW = piece.offsetWidth;
+          const pieceH = piece.offsetHeight;
+          const randomX = Math.random() * (boardWidth - pieceW);
+          const randomY = Math.random() * (boardHeight - pieceH);
+
+          piece.style.left = `${randomX}px`;
+          piece.style.top = `${randomY}px`;
+          piece.classList.remove("locked");
+        });
+
+        puzzleStatus.textContent = "Drag pieces to solve";
+      }
+
+      function resetPuzzle() {
+        puzzlePieces.forEach((piece) => {
+          piece.style.left = `${piece.dataset.targetX}px`;
+          piece.style.top = `${piece.dataset.targetY}px`;
+          piece.classList.remove("locked");
+        });
+
+        puzzleStatus.textContent = "Drag pieces to solve";
+      }
+
+      function onUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentImage = e.target.result;
+          renderPuzzle();
+          shufflePuzzle();
+        };
+        reader.readAsDataURL(file);}
+      shufflePuzzleBtn.addEventListener("click", shufflePuzzle);
+      resetPuzzleBtn.addEventListener("click", resetPuzzle);
+      puzzleUpload.addEventListener("change", onUpload);
+      const resizeObserver = new ResizeObserver(() => {
+        renderPuzzle();
+        shufflePuzzle();});
+      resizeObserver.observe(puzzleBoard);
+      renderPuzzle();
+      shufflePuzzle();
     </script>
   </body>
 </html>
