@@ -6,4 +6,6 @@ my project features are
 -a small music audio made by me in google music labs
 -a place to write your notes(Warning: won't be saved!)
 -and a place to doodle away.
+-added gallery app(where i put my fav photos)(10/31/26)
+-(added jigsaw game)(10/31/26)
 programing language used is css and html. 
